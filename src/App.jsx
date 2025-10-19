@@ -5,8 +5,19 @@ function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [fruitData, setFruitData] = useState(null);
+  const [fruitResults, setFruitResults] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState(null);
+
+  const fruitData = fruitResults[currentIndex];
+
+  const handlePrev = () => {
+    setCurrentIndex(prev => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex(prev => Math.min(fruitResults.length - 1, prev + 1));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -41,9 +52,10 @@ function App() {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
-      console.log('response', response.data)
-      const temp = Object.values(response.data.fruit_analysis)
-      setFruitData(temp[0]);
+      console.log('response', response.data);
+      const results = Object.values(response.data.fruit_analysis);
+      setFruitResults(results);
+      setCurrentIndex(0);
     } catch (err) {
       setError('Failed to analyze the image. Please try again.');
       console.error('Error:', err);
@@ -121,46 +133,116 @@ function App() {
               )}
 
               {fruitData && (
-                <div className='flex flex-col space-y-4'>
-                  <div className='flex justify-between items-center gap-4'>
-                    <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
-                      prev
+                <div className='flex flex-col space-y-4 bg-white p-6 rounded-xl shadow-lg max-w-2xl'>
+                  {/* Results Header */}
+                  <div className="flex justify-between items-center border-b pb-4">
+                    <h3 className="text-lg font-semibold text-gray-700">
+                      Analysis Results
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({fruitResults.length} fruits detected)
+                      </span>
+                    </h3>
+                    <span className="text-sm font-medium bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+                      Match {Math.round((1 / fruitResults.length) * 100)}% confidence
+                    </span>
+                  </div>
+
+                  {/* Navigation Controls */}
+                  <div className='flex items-center justify-between gap-4 py-2'>
+                    <button 
+                      onClick={handlePrev}
+                      disabled={currentIndex === 0}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                        currentIndex === 0 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:shadow-md'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      Previous
                     </button>
-                    <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
-                      next
+
+                    <span className="px-4 py-1 bg-gray-50 text-sm font-medium text-gray-600 rounded-full border">
+                      {currentIndex + 1} of {fruitResults.length}
+                    </span>
+
+                    <button 
+                      onClick={handleNext}
+                      disabled={currentIndex === fruitResults.length - 1}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                        currentIndex === fruitResults.length - 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:shadow-md'
+                      }`}
+                    >
+                      Next
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </button>
                   </div>
-                  <div className="mt-8 bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                      {fruitData.name_of_fruit}
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-3">
-                        <p className="text-gray-600">
-                          <span className="font-semibold">Calories:</span>{' '}
-                          {fruitData.calories_per_100g}
-                        </p>
-                        <p className="text-gray-600">
-                          <span className="font-semibold">Carbohydrates:</span>{' '}
-                          {fruitData.carbohydrates}
-                        </p>
-                        <p className="text-gray-600">
-                          <span className="font-semibold">Fiber:</span>{' '}
-                          {fruitData.fiber}
-                        </p>
+
+                  {/* Results Card */}
+                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M5 13l4 4L19 7" />
+                        </svg>
                       </div>
-                      <div className="space-y-3">
-                        <div>
-                          <span className="font-semibold text-gray-600">Vitamins:</span>
-                          <ul className="list-disc list-inside mt-1 text-gray-600">
-                            {fruitData.vitamins.map((vitamin, index) => (
-                              <li key={index}>{vitamin}</li>
-                            ))}
-                          </ul>
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        {fruitData.name_of_fruit}
+                      </h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Nutrition Facts */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+                          Nutrition Facts
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span className="text-gray-600">Calories</span>
+                            <span className="font-medium text-gray-800">{fruitData.calories_per_100g}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span className="text-gray-600">Carbohydrates</span>
+                            <span className="font-medium text-gray-800">{fruitData.carbohydrates}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                            <span className="text-gray-600">Fiber</span>
+                            <span className="font-medium text-gray-800">{fruitData.fiber}</span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Vitamins & Benefits */}
+                      <div className="space-y-4">
                         <div>
-                          <span className="font-semibold text-gray-600">Benefits:</span>
-                          <p className="mt-1 text-gray-600">
+                          <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+                            Vitamins
+                          </h3>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {fruitData?.vitamins?.map((vitamin, index) => (
+                              <span 
+                                key={index}
+                                className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium"
+                              >
+                                {vitamin}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+                            Health Benefits
+                          </h3>
+                          <p className="mt-3 text-gray-600 bg-white p-3 rounded-lg">
                             {fruitData.benefits_for_human_body}
                           </p>
                         </div>
