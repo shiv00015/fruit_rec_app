@@ -70,17 +70,19 @@ function App() {
       <div className="w-full h-full">
         <div className="bg-white overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-4 bg-gradient-to-r from-purple-600 to-blue-600">
-            <h1 className="text-2xl font-bold text-white text-center">
-              Fruit Recognition App
-            </h1>
-          </div>
 
           {/* Main Content */}
           <div className="p-6">
             {/* Image Upload Section */}
-            <div className='flex gap-10'>
-              <form onSubmit={handleSubmit} className="space-y-4">
+            <div className='grid grid-cols-[0.5fr_1fr] gap-4'>
+              <form onSubmit={handleSubmit} className="space-y-4 relative">
+                {/* App Label Header (form-local) */}
+                <div className="absolute -top-4 left-[50%] translate-x-[-50%] w-full">
+                  <span className="px-4 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold tracking-widest shadow-sm uppercase">
+                    Fruit Recognition App
+                  </span>
+                </div>
+
                 <div className="flex justify-center">
                   <div className="w-full max-w-lg">
                     <label className="flex flex-col items-center px-4 py-6 bg-white rounded-lg shadow-lg tracking-wide border border-blue-500 cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200">
@@ -133,7 +135,7 @@ function App() {
               )}
 
               {fruitData && (
-                <div className='flex flex-col space-y-4 bg-white p-6 rounded-xl shadow-lg max-w-2xl'>
+                <div className='flex flex-col space-y-4 bg-white p-6 rounded-xl shadow-lg w-full'>
                   {/* Results Header */}
                   <div className="flex justify-between items-center border-b pb-4">
                     <h3 className="text-lg font-semibold text-gray-700">
@@ -185,67 +187,104 @@ function App() {
                   </div>
 
                   {/* Results Card */}
-                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-                    <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 space-y-6 overflow-auto max-h-[60vh]">
+                    {/* Fruit Name and Status */}
+                    <div className="flex flex-wrap items-center gap-4 mb-2">
                       <div className="p-2 bg-green-100 rounded-lg">
                         <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                            d="M5 13l4 4L19 7" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <h2 className="text-2xl font-bold text-gray-800">
                         {fruitData.name_of_fruit}
                       </h2>
+                      <span className="ml-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                        {fruitData.freshness_status}
+                      </span>
+                      <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        {fruitData.confidence_score} confidence
+                      </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Nutrition Facts */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                          Nutrition Facts
-                        </h3>
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-                            <span className="text-gray-600">Calories</span>
-                            <span className="font-medium text-gray-800">{fruitData.calories_per_100g}</span>
-                          </div>
-                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-                            <span className="text-gray-600">Carbohydrates</span>
-                            <span className="font-medium text-gray-800">{fruitData.carbohydrates}</span>
-                          </div>
-                          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-                            <span className="text-gray-600">Fiber</span>
-                            <span className="font-medium text-gray-800">{fruitData.fiber}</span>
-                          </div>
+                    {/* Quantity, Color, Shape, Taste */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <span className="font-semibold text-gray-700">Quantity detected:</span>
+                          <span className="text-gray-800">{fruitData.quantity_detected}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="font-semibold text-gray-700">Color:</span>
+                          <span className="text-gray-800">{fruitData.color_analysis}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="font-semibold text-gray-700">Shape:</span>
+                          <span className="text-gray-800">{fruitData.shape_description}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="font-semibold text-gray-700">Taste:</span>
+                          <span className="text-gray-800">{fruitData.taste_profile}</span>
                         </div>
                       </div>
 
-                      {/* Vitamins & Benefits */}
-                      <div className="space-y-4">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                            Vitamins
-                          </h3>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {fruitData?.vitamins?.map((vitamin, index) => (
-                              <span 
-                                key={index}
-                                className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium"
-                              >
-                                {vitamin}
-                              </span>
-                            ))}
-                          </div>
+                      {/* Nutrition Facts */}
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">Nutrition Facts</h3>
+                        <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                          <span className="text-gray-600">Calories</span>
+                          <span className="font-medium text-gray-800">{fruitData.calories_per_100g}</span>
                         </div>
-                        
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                            Health Benefits
-                          </h3>
-                          <p className="mt-3 text-gray-600 bg-white p-3 rounded-lg">
-                            {fruitData.benefits_for_human_body}
-                          </p>
+                        <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                          <span className="text-gray-600">Carbohydrates</span>
+                          <span className="font-medium text-gray-800">{fruitData.carbohydrates}</span>
                         </div>
+                        <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                          <span className="text-gray-600">Fiber</span>
+                          <span className="font-medium text-gray-800">{fruitData.fiber}</span>
+                        </div>
+                        <div className="flex items-start gap-2 p-2 bg-white rounded-lg">
+                          <span className="text-gray-600 font-semibold">Summary:</span>
+                          <span className="text-gray-800">{fruitData.nutritional_value_summary}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Vitamins & Benefits */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">Vitamins</h3>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {fruitData?.vitamins?.map((vitamin, index) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium"
+                            >
+                              {vitamin}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">Health Benefits</h3>
+                        <p className="mt-2 text-gray-600 bg-white p-3 rounded-lg">
+                          {fruitData.benefits_for_human_body}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Storage Tips & Region/Season */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">Storage Tips</h3>
+                        <p className="mt-2 text-gray-600 bg-white p-3 rounded-lg">
+                          {fruitData.storage_tips}
+                        </p>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">Region & Season</h3>
+                        <p className="mt-2 text-gray-600 bg-white p-3 rounded-lg">
+                          {fruitData.region_and_season}
+                        </p>
                       </div>
                     </div>
                   </div>
