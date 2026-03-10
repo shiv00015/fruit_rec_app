@@ -145,7 +145,7 @@ function App() {
                       </span>
                     </h3>
                     <span className="text-sm font-medium bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
-                      Match {Math.round((1 / fruitResults.length) * 100)}% confidence
+                      Match {Math.round((1 / fruitResults.length) * 100)}%
                     </span>
                   </div>
 
@@ -202,7 +202,7 @@ function App() {
                         {fruitData.freshness_status}
                       </span>
                       <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        {fruitData.confidence_score} confidence
+                        {fruitData.confidence_score} Matching
                       </span>
                     </div>
 
