@@ -48,7 +48,7 @@ function App() {
       fd.append("file", selectedImage);
 
       // Replace with your actual API endpoint
-      const response = await axios.post("http://127.0.0.1:8000/api/v1/analyze-image", fd, {
+      const response = await axios.post(import.meta.env.VITE_LLM_BACKEND, fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
